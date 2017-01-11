@@ -26,17 +26,14 @@
 					console.log('processWidget: request completed with ' + textStatus);
 					triggerButtons.attr('disabled', null);
 
-
-					var statusCode = jqXHR.statusCode();
-					var responseText = jqXHR.responseText;
 					var processExitCode = null;
+					var responseText = jqXHR.responseText;
 					if (responseText.length > 0 && responseText.indexOf("\n") != -1) {
 						var lines = responseText.split("\n");
 						processExitCode = lines[lines.length - 1].trim();
 					}
-					if (jqXHR.respons)
 
-					settings.completeCallback.call(thisWidget, statusCode, processExitCode, responseText)
+					settings.completeCallback.call(thisWidget, jqXHR.status, processExitCode, responseText);
 				},
 
 				//attach custom event for ready state changes
@@ -90,11 +87,8 @@
 		outputCallback: function (output) {
 			return output.replace(/(?:\r\n|\r|\n)/g, '<br />');
 		},
-		completeCallback: function (statusCode, processExitCode, fullOutput) {
-			console.log('hello from complete handler');
-			console.log(statusCode);
-			console.log(processExitCode);
-			console.log(fullOutput);
+		completeCallback: function (httpStatusCode, processExitCode, fullOutput) {
+
 		}
 	};
 
