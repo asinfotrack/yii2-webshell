@@ -60,6 +60,11 @@ class ShellAction extends \yii\base\Action
 	 */
 	public function run()
 	{
+		$response = Yii::$app->response;
+		$response->format = Response::FORMAT_RAW;
+		$response->statusCode = 200;
+		$response->send();
+
 		//run the process
 		$exitCode = $this->process->run(function ($type, $data) {
 			$isError = strcasecmp($type, Process::ERR) === 0;
@@ -71,18 +76,7 @@ class ShellAction extends \yii\base\Action
 			}
 		});
 
-		//prepare the response
-		$response = Yii::$app->response;
-		$response->format = Response::FORMAT_RAW;
-
-		//fetch result and send the content
-		if (strcasecmp($exitCode, (string) $this->commandExitCodeSuccess) === 0) {
-			$response->statusCode = 200;
-		} else {
-			$response->statusCode = 500;
-		}
-
-		return sprintf("\nExit code of process: %d\n%d", $exitCode, $exitCode);
+		$this->handleOutput(sprintf("\nExit code of process: %d\n%d", $exitCode, $exitCode), $exitCode !== 0);
 	}
 
 	/**
